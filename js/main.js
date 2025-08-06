@@ -3,8 +3,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     try {
         const tg = window.Telegram.WebApp;
-        
-        // --- LA CLAVE DE ESTA VERSIÓN: Detectamos si estamos en Telegram ---
         const isTelegram = tg.platform !== 'unknown';
 
         if (isTelegram) {
@@ -12,13 +10,15 @@ document.addEventListener('DOMContentLoaded', function() {
             tg.expand();
         }
 
+        // --- CORRECCIÓN DE RUTAS: Simplificamos la configuración ---
         const config = {
-            repoName: 'Gato_Kombat',
-            get manifestUrl() { return `https://mang369.github.io/${this.repoName}/tonconnect-manifest.json`; },
-            get baseImageUrl() { return `/${this.repoName}/images`; }
+            baseImageUrl: 'images' // Usaremos rutas relativas simples
         };
 
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: config.manifestUrl, buttonRootId: 'ton-connect-button' });
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ 
+            manifestUrl: `https://mang369.github.io/Gato_Kombat/tonconnect-manifest.json`, 
+            buttonRootId: 'ton-connect-button' 
+        });
 
         const boosts = {
             tap: { 
@@ -53,106 +53,26 @@ document.addEventListener('DOMContentLoaded', function() {
             openBoostModalBtn: document.getElementById('boost-btn'),
             boostList: document.getElementById('boost-list'),
             userInfoContainer: document.getElementById('user-info-container'),
+            // --- CORRECCIÓN DE BOTONES: Añadimos los botones del footer ---
+            faqBtn: document.getElementById('faq-btn'),
+            wpBtn: document.getElementById('wp-btn')
         };
         
-        // --- NUEVO: Función de alerta consciente del entorno ---
         function showAlert(message) {
-            if (isTelegram) {
-                tg.showAlert(message);
-            } else {
-                alert(message); // Usa la alerta del navegador como alternativa
-            }
+            if (isTelegram) { tg.showAlert(message); } 
+            else { alert(message); }
         }
 
-        function preloadImages() {
-            const images = ['logo.png', 'gato_k-coin.png', 'boost-icon.png'];
-            images.forEach(function(src) {
-                const img = new Image();
-                img.src = `images/${src}`;
-            });
-        }
-
-        function saveGameState() { localStorage.setItem('gatoKombatState', JSON.stringify(gameState)); }
-        
-        function loadGameState() {
-            const savedState = localStorage.getItem('gatoKombatState');
-            if (savedState) {
-                const loadedData = JSON.parse(savedState);
-                gameState = { ...gameState, ...loadedData };
-                if (!gameState.boosts) gameState.boosts = { tap: 0, energy: 0 };
-                const now = new Date().getTime();
-                const elapsedSeconds = Math.floor((now - (gameState.lastLogin || now)) / 1000);
-                if (elapsedSeconds > 5) { // Solo muestra si han pasado más de 5 segundos
-                    const offlineEarnings = Math.floor(elapsedSeconds * (gameState.profitPerHour / 3600));
-                    if (offlineEarnings > 0) {
-                        gameState.balance += offlineEarnings;
-                        showAlert(`Ganaste ${formatNumber(offlineEarnings)} monedas mientras no estabas.`);
-                    }
-                }
-            }
-            gameState.lastLogin = new Date().getTime();
-        }
-
-        function formatNumber(num) { return new Intl.NumberFormat().format(Math.floor(num)); }
-        
-        function updateAllDisplays() {
-            DOMElements.balanceDisplay.innerText = formatNumber(gameState.balance);
-            DOMElements.profitDisplay.innerText = `+${formatNumber(gameState.profitPerHour)}`;
-            DOMElements.energyLevelDisplay.innerText = `${formatNumber(gameState.energy)} / ${formatNumber(gameState.maxEnergy)}`;
-            DOMElements.energyBar.style.width = `${(gameState.energy / gameState.maxEnergy) * 100}%`;
-        }
-        
-        function handleInteraction(event) {
-            event.preventDefault();
-            if (gameState.energy >= gameState.tapsPerClick) {
-                if (isTelegram) {
-                    tg.HapticFeedback.impactOccurred('light');
-                }
-                gameState.balance += gameState.tapsPerClick;
-                gameState.energy -= gameState.tapsPerClick;
-                DOMElements.clickerImage.style.transform = 'scale(0.95)';
-                setTimeout(function() { DOMElements.clickerImage.style.transform = 'scale(1)'; }, 100);
-                let x = event.touches ? event.touches[0].clientX : event.clientX;
-                let y = event.touches ? event.touches[0].clientY : event.clientY;
-                showFloatingText(x, y);
-                updateAllDisplays();
-            }
-        }
-
-        function showFloatingText(x, y) {
-            const floatingText = document.createElement('div');
-            floatingText.className = 'floating-text unselectable';
-            floatingText.innerText = `+${gameState.tapsPerClick}`;
-            floatingText.style.left = `${x}px`;
-            floatingText.style.top = `${y}px`;
-            document.body.appendChild(floatingText);
-            floatingText.addEventListener('animationend', function() { floatingText.remove(); });
-        }
-
-        function calculateCost(boostId) {
-            const boostLevel = gameState.boosts[boostId] || 0;
-            const baseCost = boosts[boostId].baseCost;
-            return Math.floor(baseCost * Math.pow(1.5, boostLevel));
-        }
-        
-        function purchaseBoost(boostId) {
-            const cost = calculateCost(boostId);
-            if (gameState.balance >= cost) {
-                gameState.balance -= cost;
-                gameState.boosts[boostId]++;
-                boosts[boostId].applyEffect(gameState);
-                recalculateProfit();
-                renderBoosts();
-                updateAllDisplays();
-                saveGameState();
-            } else {
-                showAlert('¡Monedas insuficientes!');
-            }
-        }
-        
-        function recalculateProfit() {
-            gameState.profitPerHour = (gameState.boosts.tap * 10) + (gameState.boosts.energy * 20);
-        }
+        function preloadImages() { /* ... (función sin cambios) ... */ }
+        function saveGameState() { /* ... (función sin cambios) ... */ }
+        function loadGameState() { /* ... (función sin cambios) ... */ }
+        function formatNumber(num) { /* ... (función sin cambios) ... */ }
+        function updateAllDisplays() { /* ... (función sin cambios) ... */ }
+        function handleInteraction(event) { /* ... (función sin cambios) ... */ }
+        function showFloatingText(x, y) { /* ... (función sin cambios) ... */ }
+        function calculateCost(boostId) { /* ... (función sin cambios) ... */ }
+        function purchaseBoost(boostId) { /* ... (función sin cambios) ... */ }
+        function recalculateProfit() { /* ... (función sin cambios) ... */ }
 
         function renderBoosts() {
             DOMElements.boostList.innerHTML = '';
@@ -163,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = document.createElement('div');
                 item.className = 'boost-item';
                 item.onclick = function() { purchaseBoost(boostId); };
+                // --- CORRECCIÓN DE RUTAS: Usamos la nueva configuración simple ---
                 item.innerHTML = `
                     <img src="${config.baseImageUrl}/${boostData.icon}" alt="${boostData.name}">
                     <div class="boost-info">
@@ -181,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             preloadImages();
             loadGameState();
             let userName = 'Player';
+            // --- CORRECCIÓN DE RUTAS: Usamos la nueva configuración simple ---
             let userAvatar = `${config.baseImageUrl}/logo.png`;
 
             if (isTelegram && tg.initDataUnsafe.user) {
@@ -190,14 +112,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             DOMElements.userInfoContainer.innerHTML = `<img src="${userAvatar}" alt="Avatar"><div><span>${userName}</span><p class="level">Nivel ${gameState.level}</p></div>`;
             
-            setInterval(function() {
-                if (gameState.energy < gameState.maxEnergy) {
-                    gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + gameState.energyRecoveryRate);
-                }
-                gameState.balance += gameState.profitPerHour / 3600;
-                updateAllDisplays();
-            }, 1000);
-            
+            // --- EL RESTO DEL INIT (sin cambios) ---
+            setInterval(function() { /* ... */ }, 1000);
             setInterval(saveGameState, 5000);
 
             DOMElements.clickerBtn.addEventListener('mousedown', handleInteraction);
@@ -205,20 +121,40 @@ document.addEventListener('DOMContentLoaded', function() {
             DOMElements.openBoostModalBtn.addEventListener('click', function() { renderBoosts(); DOMElements.boostModal.classList.remove('hidden'); });
             DOMElements.closeBoostModalBtn.addEventListener('click', function() { DOMElements.boostModal.classList.add('hidden'); });
 
+            // --- CORRECCIÓN DE BOTONES: Añadimos los listeners aquí ---
+            DOMElements.faqBtn.addEventListener('click', function() { showPage('faq.html'); });
+            DOMElements.wpBtn.addEventListener('click', function() { showPage('whitepaper.md'); });
+
             recalculateProfit();
             updateAllDisplays();
             DOMElements.loader.classList.add('hidden');
             DOMElements.gameContainer.classList.remove('hidden');
         }
 
-        window.showPage = function(pageName) {
-            const fullUrl = `https://mang369.github.io/${config.repoName}/${pageName}`;
+        // --- CORRECCIÓN DE BOTONES: Función de navegación anti-bloqueo ---
+        function showPage(pageName) {
+            const fullUrl = `https://mang369.github.io/Gato_Kombat/${pageName}`;
             if (isTelegram) {
                 tg.openLink(fullUrl);
             } else {
-                window.open(fullUrl, '_blank');
+                // Esto evita el bloqueo de popups
+                window.location.href = fullUrl;
             }
         };
+
+        // --- PEGO EL RESTO DE FUNCIONES COMPLETAS PARA EVITAR ERRORES ---
+        function preloadImages() { const images=['logo.png','gato_k-coin.png','boost-icon.png']; images.forEach(function(src){const img=new Image(); img.src=`images/${src}`;});}
+        function saveGameState() {localStorage.setItem('gatoKombatState',JSON.stringify(gameState));}
+        function loadGameState(){const savedState=localStorage.getItem('gatoKombatState');if(savedState){const loadedData=JSON.parse(savedState);gameState={...gameState,...loadedData};if(!gameState.boosts)gameState.boosts={tap:0,energy:0};const now=new Date().getTime();const elapsedSeconds=Math.floor((now-(gameState.lastLogin||now))/1000);if(elapsedSeconds>5){const offlineEarnings=Math.floor(elapsedSeconds*(gameState.profitPerHour/3600));if(offlineEarnings>0){gameState.balance+=offlineEarnings;showAlert(`Ganaste ${formatNumber(offlineEarnings)} monedas mientras no estabas.`);}}}gameState.lastLogin=new Date().getTime();}
+        function formatNumber(num){return new Intl.NumberFormat().format(Math.floor(num));}
+        function updateAllDisplays(){DOMElements.balanceDisplay.innerText=formatNumber(gameState.balance);DOMElements.profitDisplay.innerText=`+${formatNumber(gameState.profitPerHour)}`;DOMElements.energyLevelDisplay.innerText=`${formatNumber(gameState.energy)} / ${formatNumber(gameState.maxEnergy)}`;DOMElements.energyBar.style.width=`${(gameState.energy/gameState.maxEnergy)*100}%`;}
+        function handleInteraction(event){event.preventDefault();if(gameState.energy>=gameState.tapsPerClick){if(isTelegram){tg.HapticFeedback.impactOccurred('light');}gameState.balance+=gameState.tapsPerClick;gameState.energy-=gameState.tapsPerClick;DOMElements.clickerImage.style.transform='scale(0.95)';setTimeout(function(){DOMElements.clickerImage.style.transform='scale(1)';},100);let x=event.touches?event.touches[0].clientX:event.clientX;let y=event.touches?event.touches[0].clientY:event.clientY;showFloatingText(x,y);updateAllDisplays();}}
+        function showFloatingText(x,y){const floatingText=document.createElement('div');floatingText.className='floating-text unselectable';floatingText.innerText=`+${gameState.tapsPerClick}`;floatingText.style.left=`${x}px`;floatingText.style.top=`${y}px`;document.body.appendChild(floatingText);floatingText.addEventListener('animationend',function(){floatingText.remove();});}
+        function calculateCost(boostId){const boostLevel=gameState.boosts[boostId]||0;const baseCost=boosts[boostId].baseCost;return Math.floor(baseCost*Math.pow(1.5,boostLevel));}
+        function purchaseBoost(boostId){const cost=calculateCost(boostId);if(gameState.balance>=cost){gameState.balance-=cost;gameState.boosts[boostId]++;boosts[boostId].applyEffect(gameState);recalculateProfit();renderBoosts();updateAllDisplays();saveGameState();}else{showAlert('¡Monedas insuficientes!');}}
+        function recalculateProfit(){gameState.profitPerHour=(gameState.boosts.tap*10)+(gameState.boosts.energy*20);}
+        setInterval(function(){if(gameState.energy<gameState.maxEnergy){gameState.energy=Math.min(gameState.maxEnergy,gameState.energy+gameState.energyRecoveryRate);}gameState.balance+=gameState.profitPerHour/3600;if(document.getElementById('game-container') && !document.getElementById('game-container').classList.contains('hidden')){updateAllDisplays();}},1000);
+
 
         init();
 
