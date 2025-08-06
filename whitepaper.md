@@ -1,3 +1,5 @@
+<img width="2816" height="1536" alt="Gemini_Generated_Image_2qmfn2qmfn2qmfn2" src="https://github.com/user-attachments/assets/0f3845e5-bfb2-4d3e-99f0-2db5e21bfd93" />
+
 # Whitepaper de Gato Kombat
 
 ## 1. Introducción: La Nueva Era de los Juegos en Telegram
@@ -45,5 +47,6 @@ La "Temporada 1" del juego culminará con el Airdrop. Se tomará una "foto" (sna
 - **Fase 4 (Airdrop y Listado):** Final de la Temporada 1. Cálculo y distribución del Airdrop de $GATO. Negociaciones para listar el token en exchanges descentralizados dentro de Telegram (ej. DeDust, STON.fi).
 
 ## 5. El Equipo
+
 
 Somos un equipo de desarrolladores y entusiastas de Web3 apasionados por el potencial de la red TON y los juegos en Telegram. (Aquí describirías al equipo).
