@@ -3,8 +3,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     try {
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        
+        // --- LA CLAVE DE ESTA VERSIÓN: Detectamos si estamos en Telegram ---
+        const isTelegram = tg.platform !== 'unknown';
+
+        if (isTelegram) {
+            tg.ready();
+            tg.expand();
+        }
 
         const config = {
             repoName: 'Gato_Kombat',
@@ -14,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: config.manifestUrl, buttonRootId: 'ton-connect-button' });
 
-        // --- CORRECCIÓN: Sintaxis a prueba de balas para el objeto de mejoras ---
         const boosts = {
             tap: { 
                 name: 'Toque Potenciado', baseCost: 50, icon: 'boost-icon.png',
@@ -49,6 +54,15 @@ document.addEventListener('DOMContentLoaded', function() {
             boostList: document.getElementById('boost-list'),
             userInfoContainer: document.getElementById('user-info-container'),
         };
+        
+        // --- NUEVO: Función de alerta consciente del entorno ---
+        function showAlert(message) {
+            if (isTelegram) {
+                tg.showAlert(message);
+            } else {
+                alert(message); // Usa la alerta del navegador como alternativa
+            }
+        }
 
         function preloadImages() {
             const images = ['logo.png', 'gato_k-coin.png', 'boost-icon.png'];
@@ -68,11 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!gameState.boosts) gameState.boosts = { tap: 0, energy: 0 };
                 const now = new Date().getTime();
                 const elapsedSeconds = Math.floor((now - (gameState.lastLogin || now)) / 1000);
-                if (elapsedSeconds > 0) {
+                if (elapsedSeconds > 5) { // Solo muestra si han pasado más de 5 segundos
                     const offlineEarnings = Math.floor(elapsedSeconds * (gameState.profitPerHour / 3600));
                     if (offlineEarnings > 0) {
                         gameState.balance += offlineEarnings;
-                        tg.showAlert(`Ganaste ${formatNumber(offlineEarnings)} monedas mientras no estabas.`);
+                        showAlert(`Ganaste ${formatNumber(offlineEarnings)} monedas mientras no estabas.`);
                     }
                 }
             }
@@ -91,7 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
         function handleInteraction(event) {
             event.preventDefault();
             if (gameState.energy >= gameState.tapsPerClick) {
-                tg.HapticFeedback.impactOccurred('light');
+                if (isTelegram) {
+                    tg.HapticFeedback.impactOccurred('light');
+                }
                 gameState.balance += gameState.tapsPerClick;
                 gameState.energy -= gameState.tapsPerClick;
                 DOMElements.clickerImage.style.transform = 'scale(0.95)';
@@ -130,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateAllDisplays();
                 saveGameState();
             } else {
-                tg.showAlert('¡Monedas insuficientes!');
+                showAlert('¡Monedas insuficientes!');
             }
         }
         
@@ -164,11 +180,15 @@ document.addEventListener('DOMContentLoaded', function() {
         function init() {
             preloadImages();
             loadGameState();
-            if (tg.initDataUnsafe.user) {
+            let userName = 'Player';
+            let userAvatar = `${config.baseImageUrl}/logo.png`;
+
+            if (isTelegram && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
-                const avatarUrl = user.photo_url || `${config.baseImageUrl}/logo.png`;
-                DOMElements.userInfoContainer.innerHTML = `<img src="${avatarUrl}" alt="Avatar"><div><span>${user.first_name || 'Gato'}</span><p class="level">Nivel ${gameState.level}</p></div>`;
+                userName = user.first_name || 'Player';
+                if(user.photo_url) userAvatar = user.photo_url;
             }
+            DOMElements.userInfoContainer.innerHTML = `<img src="${userAvatar}" alt="Avatar"><div><span>${userName}</span><p class="level">Nivel ${gameState.level}</p></div>`;
             
             setInterval(function() {
                 if (gameState.energy < gameState.maxEnergy) {
@@ -193,7 +213,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.showPage = function(pageName) {
             const fullUrl = `https://mang369.github.io/${config.repoName}/${pageName}`;
-            tg.openLink(fullUrl);
+            if (isTelegram) {
+                tg.openLink(fullUrl);
+            } else {
+                window.open(fullUrl, '_blank');
+            }
         };
 
         init();
