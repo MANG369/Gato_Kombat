@@ -9,5 +9,6 @@
 |-- /js/
 |   |-- main.js
 |-- /images/
-|   |-- (tus imágenes aquí: logo.png, banner.png, etc.)
+|   |-- (imágenes: logo.png, banner.png.)
 |-- whitepaper.md
+
