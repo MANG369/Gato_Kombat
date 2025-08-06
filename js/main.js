@@ -2,7 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     try {
-        // --- 1. CONFIGURACIÓN INICIAL ---
         const tg = window.Telegram.WebApp;
         const isTelegram = tg.platform !== 'unknown';
 
@@ -14,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const config = {
             repoName: 'Gato_Kombat',
             get manifestUrl() { return `https://mang369.github.io/${this.repoName}/tonconnect-manifest.json`; },
-            baseImageUrl: 'images'
+            // CORRECCIÓN FINAL: La ruta base ahora está vacía, ya que las imágenes están en la raíz
+            baseImageUrl: '' 
         };
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: config.manifestUrl, buttonRootId: 'ton-connect-button' });
@@ -39,44 +39,27 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         const DOMElements = {
-            loader: document.getElementById('loader'),
-            gameContainer: document.getElementById('game-container'),
-            clickerBtn: document.getElementById('clicker-btn'),
-            clickerImage: document.getElementById('clicker-image'),
-            balanceDisplay: document.getElementById('balance-display'),
-            profitDisplay: document.getElementById('profit-per-hour-display'),
-            energyBar: document.getElementById('energy-bar'),
-            energyLevelDisplay: document.getElementById('energy-level'),
-            boostModal: document.getElementById('boost-modal'),
-            closeBoostModalBtn: document.getElementById('close-boost-modal-btn'),
-            openBoostModalBtn: document.getElementById('boost-btn'),
-            boostList: document.getElementById('boost-list'),
-            userInfoContainer: document.getElementById('user-info-container'),
-            faqBtn: document.getElementById('faq-btn'),
+            loader: document.getElementById('loader'), gameContainer: document.getElementById('game-container'),
+            clickerBtn: document.getElementById('clicker-btn'), clickerImage: document.getElementById('clicker-image'),
+            balanceDisplay: document.getElementById('balance-display'), profitDisplay: document.getElementById('profit-per-hour-display'),
+            energyBar: document.getElementById('energy-bar'), energyLevelDisplay: document.getElementById('energy-level'),
+            boostModal: document.getElementById('boost-modal'), closeBoostModalBtn: document.getElementById('close-boost-modal-btn'),
+            openBoostModalBtn: document.getElementById('boost-btn'), boostList: document.getElementById('boost-list'),
+            userInfoContainer: document.getElementById('user-info-container'), faqBtn: document.getElementById('faq-btn'),
             wpBtn: document.getElementById('wp-btn')
         };
         
-        // --- 2. FUNCIONES PRINCIPALES (DEFINIDAS UNA SOLA VEZ) ---
-
-        function showAlert(message) {
-            if (isTelegram) {
-                tg.showAlert(message);
-            } else {
-                alert(message);
-            }
-        }
+        function showAlert(message) { if (isTelegram) { tg.showAlert(message); } else { alert(message); } }
 
         function preloadImages() {
             const images = ['logo.png', 'gato_k-coin.png', 'boost-icon.png'];
             images.forEach(function(src) {
                 const img = new Image();
-                img.src = `${config.baseImageUrl}/${src}`;
+                img.src = src; // Carga directamente desde la raíz
             });
         }
 
-        function saveGameState() {
-            localStorage.setItem('gatoKombatState', JSON.stringify(gameState));
-        }
+        function saveGameState() { localStorage.setItem('gatoKombatState', JSON.stringify(gameState)); }
         
         function loadGameState() {
             const savedState = localStorage.getItem('gatoKombatState');
@@ -97,9 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gameState.lastLogin = new Date().getTime();
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat().format(Math.floor(num));
-        }
+        function formatNumber(num) { return new Intl.NumberFormat().format(Math.floor(num)); }
         
         function updateAllDisplays() {
             DOMElements.balanceDisplay.innerText = formatNumber(gameState.balance);
@@ -111,9 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function handleInteraction(event) {
             event.preventDefault();
             if (gameState.energy >= gameState.tapsPerClick) {
-                if (isTelegram) {
-                    tg.HapticFeedback.impactOccurred('light');
-                }
+                if (isTelegram) { tg.HapticFeedback.impactOccurred('light'); }
                 gameState.balance += gameState.tapsPerClick;
                 gameState.energy -= gameState.tapsPerClick;
                 DOMElements.clickerImage.style.transform = 'scale(0.95)';
@@ -170,14 +149,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.className = 'boost-item';
                 item.onclick = function() { purchaseBoost(boostId); };
                 item.innerHTML = `
-                    <img src="${config.baseImageUrl}/${boostData.icon}" alt="${boostData.name}">
+                    <img src="${boostData.icon}" alt="${boostData.name}">
                     <div class="boost-info">
                         <h3>${boostData.name}</h3>
                         <p>${boostData.description(level)}</p>
                     </div>
                     <div class="boost-cost">
                         <span>${formatNumber(cost)}</span>
-                        <img src="${config.baseImageUrl}/gato_k-coin.png" class="coin-icon" style="width:20px; height:20px;">
+                        <img src="gato_k-coin.png" class="coin-icon" style="width:20px; height:20px;">
                     </div>`;
                 DOMElements.boostList.appendChild(item);
             }
@@ -185,20 +164,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function showPage(pageName) {
             const fullUrl = `https://mang369.github.io/Gato_Kombat/${pageName}`;
-            if (isTelegram) {
-                tg.openLink(fullUrl);
-            } else {
-                window.location.href = fullUrl;
-            }
+            if (isTelegram) { tg.openLink(fullUrl); } else { window.location.href = fullUrl; }
         };
         
-        // --- 3. INICIALIZACIÓN DEL JUEGO ---
         function init() {
             preloadImages();
             loadGameState();
 
             let userName = 'Player';
-            let userAvatar = `${config.baseImageUrl}/logo.png`;
+            let userAvatar = `logo.png`; // Carga directamente desde la raíz
             if (isTelegram && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
                 userName = user.first_name || 'Player';

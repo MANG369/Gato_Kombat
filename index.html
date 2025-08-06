@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-eval' https://telegram.org https://unpkg.com;
@@ -12,17 +11,12 @@
         img-src 'self' data: https://*.telegram.org;
         connect-src *; 
     ">
-    
     <title>Gato Kombat</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="loader">
-        <div class="spinner"></div>
-        <span>Cargando Partida...</span>
-    </div>
-
+    <div id="loader"><div class="spinner"></div><span>Cargando Partida...</span></div>
     <div id="game-container" class="hidden">
         <div class="header">
             <div id="user-info-container" class="user-info"></div>
@@ -33,11 +27,11 @@
             <h2 id="profit-per-hour-display">+0</h2>
             <p>Tu Balance</p>
             <h1 id="balance-display">0</h1>
-            <img src="images/gato_k-coin.png" alt="Moneda" class="coin-icon">
+            <img src="gato_k-coin.png" alt="Moneda" class="coin-icon">
         </div>
         <div class="clicker-section">
             <div id="clicker-btn" class="unselectable">
-                <img src="images/logo.png" alt="Toca" id="clicker-image">
+                <img src="logo.png" alt="Toca" id="clicker-image">
             </div>
         </div>
         <div class="energy-section">
@@ -50,14 +44,12 @@
             <button id="wp-btn">📄<span>Whitepaper</span></button>
         </div>
     </div>
-
     <div id="boost-modal" class="modal-container hidden">
         <div class="modal-content">
             <div class="modal-header"><h2>Mejoras 🚀</h2><button id="close-boost-modal-btn">&times;</button></div>
             <div id="boost-list" class="modal-body"></div>
         </div>
     </div>
-
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="js/main.js"></script>
 </body>
