@@ -1,6 +1,6 @@
 "use strict";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     try {
         const tg = window.Telegram.WebApp;
         tg.ready();
@@ -14,21 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: config.manifestUrl, buttonRootId: 'ton-connect-button' });
 
-        // --- REFACTORIZACIÓN A1: Lógica de Mejoras ---
-        // Ahora cada mejora es un "objeto de datos" que define su propio efecto.
-        // Añadir nuevas mejoras es tan fácil como añadir un nuevo objeto aquí.
+        // --- CORRECCIÓN: Sintaxis a prueba de balas para el objeto de mejoras ---
         const boosts = {
             tap: { 
                 name: 'Toque Potenciado', baseCost: 50, icon: 'boost-icon.png',
-                description: (level) => `+1 al toque (Nivel ${level})`,
-                applyEffect: (state) => { state.tapsPerClick++; }
+                description: function(level) { return `+1 al toque (Nivel ${level})`; },
+                applyEffect: function(state) { state.tapsPerClick++; }
             },
             energy: { 
                 name: 'Batería Ampliada', baseCost: 100, icon: 'boost-icon.png',
-                description: (level) => `+500 a energía máxima (Nivel ${level})`,
-                applyEffect: (state) => { state.maxEnergy += 500; }
+                description: function(level) { return `+500 a energía máxima (Nivel ${level})`; },
+                applyEffect: function(state) { state.maxEnergy += 500; }
             }
-            // Puedes añadir más mejoras aquí fácilmente.
         };
 
         let gameState = {
@@ -55,21 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function preloadImages() {
             const images = ['logo.png', 'gato_k-coin.png', 'boost-icon.png'];
-            images.forEach(src => {
+            images.forEach(function(src) {
                 const img = new Image();
-                img.src = `images/${src}`; // Precarga con rutas relativas
+                img.src = `images/${src}`;
             });
         }
 
         function saveGameState() { localStorage.setItem('gatoKombatState', JSON.stringify(gameState)); }
+        
         function loadGameState() {
             const savedState = localStorage.getItem('gatoKombatState');
             if (savedState) {
                 const loadedData = JSON.parse(savedState);
                 gameState = { ...gameState, ...loadedData };
-                // Asegúrate de que los niveles de boosts existan para evitar errores
                 if (!gameState.boosts) gameState.boosts = { tap: 0, energy: 0 };
-
                 const now = new Date().getTime();
                 const elapsedSeconds = Math.floor((now - (gameState.lastLogin || now)) / 1000);
                 if (elapsedSeconds > 0) {
@@ -99,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameState.balance += gameState.tapsPerClick;
                 gameState.energy -= gameState.tapsPerClick;
                 DOMElements.clickerImage.style.transform = 'scale(0.95)';
-                setTimeout(() => { DOMElements.clickerImage.style.transform = 'scale(1)'; }, 100);
+                setTimeout(function() { DOMElements.clickerImage.style.transform = 'scale(1)'; }, 100);
                 let x = event.touches ? event.touches[0].clientX : event.clientX;
                 let y = event.touches ? event.touches[0].clientY : event.clientY;
                 showFloatingText(x, y);
@@ -114,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             floatingText.style.left = `${x}px`;
             floatingText.style.top = `${y}px`;
             document.body.appendChild(floatingText);
-            floatingText.addEventListener('animationend', () => floatingText.remove());
+            floatingText.addEventListener('animationend', function() { floatingText.remove(); });
         }
 
         function calculateCost(boostId) {
@@ -123,16 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return Math.floor(baseCost * Math.pow(1.5, boostLevel));
         }
         
-        // --- FUNCIÓN REFACTORIZADA A1 ---
         function purchaseBoost(boostId) {
             const cost = calculateCost(boostId);
             if (gameState.balance >= cost) {
                 gameState.balance -= cost;
                 gameState.boosts[boostId]++;
-                
-                // Aplica el efecto dinámicamente
                 boosts[boostId].applyEffect(gameState);
-
                 recalculateProfit();
                 renderBoosts();
                 updateAllDisplays();
@@ -143,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         function recalculateProfit() {
-            // Esta función podría expandirse en el futuro
             gameState.profitPerHour = (gameState.boosts.tap * 10) + (gameState.boosts.energy * 20);
         }
 
@@ -155,8 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cost = calculateCost(boostId);
                 const item = document.createElement('div');
                 item.className = 'boost-item';
-                item.onclick = () => purchaseBoost(boostId);
-                // Las rutas aquí SÍ necesitan la ruta base del repo, porque se generan desde JS
+                item.onclick = function() { purchaseBoost(boostId); };
                 item.innerHTML = `
                     <img src="${config.baseImageUrl}/${boostData.icon}" alt="${boostData.name}">
                     <div class="boost-info">
@@ -176,12 +166,11 @@ document.addEventListener('DOMContentLoaded', () => {
             loadGameState();
             if (tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
-                // La ruta aquí SÍ necesita la ruta base del repo
                 const avatarUrl = user.photo_url || `${config.baseImageUrl}/logo.png`;
                 DOMElements.userInfoContainer.innerHTML = `<img src="${avatarUrl}" alt="Avatar"><div><span>${user.first_name || 'Gato'}</span><p class="level">Nivel ${gameState.level}</p></div>`;
             }
             
-            setInterval(() => {
+            setInterval(function() {
                 if (gameState.energy < gameState.maxEnergy) {
                     gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + gameState.energyRecoveryRate);
                 }
@@ -193,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             DOMElements.clickerBtn.addEventListener('mousedown', handleInteraction);
             DOMElements.clickerBtn.addEventListener('touchstart', handleInteraction, { passive: false });
-            DOMElements.openBoostModalBtn.addEventListener('click', () => { renderBoosts(); DOMElements.boostModal.classList.remove('hidden'); });
-            DOMElements.closeBoostModalBtn.addEventListener('click', () => DOMElements.boostModal.classList.add('hidden'); });
+            DOMElements.openBoostModalBtn.addEventListener('click', function() { renderBoosts(); DOMElements.boostModal.classList.remove('hidden'); });
+            DOMElements.closeBoostModalBtn.addEventListener('click', function() { DOMElements.boostModal.classList.add('hidden'); });
 
             recalculateProfit();
             updateAllDisplays();
@@ -202,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.gameContainer.classList.remove('hidden');
         }
 
-        window.showPage = (pageName) => {
+        window.showPage = function(pageName) {
             const fullUrl = `https://mang369.github.io/${config.repoName}/${pageName}`;
             tg.openLink(fullUrl);
         };
