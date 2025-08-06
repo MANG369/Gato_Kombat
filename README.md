@@ -1,3 +1,5 @@
+<img width="2816" height="1536" alt="Gemini_Generated_Image_2qmfn2qmfn2qmfn2" src="https://github.com/user-attachments/assets/f8bbec0a-3313-42e1-8fab-1f3866e83ddf" />
+
 # Whitepaper de Gato Kombat
 
 ## 1. Introducción: La Nueva Era de los Juegos en Telegram
