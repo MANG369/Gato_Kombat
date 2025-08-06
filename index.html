@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://telegram.org https://unpkg.com;">
-    
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://telegram.org https://unpkg.com; img-src 'self' data: https://*.telegram.org;">
     <title>Gato Kombat</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -33,7 +31,7 @@
 
         <div class="clicker-section">
             <div id="clicker-btn" class="unselectable">
-                <img src="images/logo.png" alt="Toca aquí" id="clicker-image">
+                 <img src="images/logo.png" alt="Toca aquí" id="clicker-image">
             </div>
         </div>
         
@@ -46,8 +44,8 @@
 
         <div class="footer-nav">
             <button id="boost-btn">🚀<span>Mejoras</span></button>
-            <button onclick="showPage('faq.html')">❓<span>FAQ</span></button>
-            <button onclick="showPage('whitepaper.md')">📄<span>Whitepaper</span></button>
+            <button id="faq-btn">❓<span>FAQ</span></button>
+            <button id="wp-btn">📄<span>Whitepaper</span></button>
         </div>
     </div>
 
