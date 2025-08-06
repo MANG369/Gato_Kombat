@@ -1,0 +1,13 @@
+/gato_kombat/
+|-- index.html
+|-- terms.html
+|-- privacy.html
+|-- faq.html
+|-- tonconnect-manifest.json  <-- Archivo nuevo y CRUCIAL
+|-- /css/
+|   |-- style.css
+|-- /js/
+|   |-- main.js
+|-- /images/
+|   |-- (tus imágenes aquí: logo.png, banner.png, etc.)
+|-- whitepaper.md
