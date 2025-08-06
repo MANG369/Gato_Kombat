@@ -4,30 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gato Kombat</title>
-    <link rel="stylesheet" href="/Gato_Kombat/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="loader">Cargando...</div>
+    <div id="loader">
+        <div class="spinner"></div>
+        <span>Cargando Partida...</span>
+    </div>
+
     <div id="game-container" class="hidden">
         
         <div class="header">
-            <div id="user-info-container" class="user-info">
-                </div>
+            <div id="user-info-container" class="user-info"></div>
             <div id="ton-connect-button"></div>
         </div>
 
-        <div class="balance-section">
+        <div class.balance-section">
             <p>Ganancia por Hora</p>
             <h2 id="profit-per-hour-display">+0</h2>
             <p>Tu Balance</p>
             <h1 id="balance-display">0</h1>
-            <img src="/Gato_Kombat/images/gato_k-coin.png" alt="Moneda del Juego" class="coin-icon">
+            <img src="images/gato_k-coin.png" alt="Moneda del Juego" class="coin-icon">
         </div>
 
         <div class="clicker-section">
             <div id="clicker-btn" class="unselectable">
-                <img src="/Gato_Kombat/images/logo.png" alt="Toca aquí" id="clicker-image">
+                 <img src="images/logo.png" alt="Toca aquí" id="clicker-image">
             </div>
         </div>
         
@@ -47,16 +50,12 @@
 
     <div id="boost-modal" class="modal-container hidden">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Mejoras 🚀</h2>
-                <button id="close-boost-modal-btn">&times;</button>
-            </div>
-            <div id="boost-list" class="modal-body">
-                </div>
+            <div class="modal-header"><h2>Mejoras 🚀</h2><button id="close-boost-modal-btn">&times;</button></div>
+            <div id="boost-list" class="modal-body"></div>
         </div>
     </div>
 
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="/Gato_Kombat/js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
