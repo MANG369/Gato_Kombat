@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const config = {
             repoName: 'Gato_Kombat',
             get manifestUrl() { return `https://mang369.github.io/${this.repoName}/tonconnect-manifest.json`; },
-            // CORRECCIÓN FINAL: La ruta base ahora está vacía, ya que las imágenes están en la raíz
-            baseImageUrl: '' 
+            baseImageUrl: ''
         };
 
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: config.manifestUrl, buttonRootId: 'ton-connect-button' });
@@ -49,13 +48,15 @@ document.addEventListener('DOMContentLoaded', function() {
             wpBtn: document.getElementById('wp-btn')
         };
         
-        function showAlert(message) { if (isTelegram) { tg.showAlert(message); } else { alert(message); } }
+        function showAlert(message) {
+            if (isTelegram) { tg.showAlert(message); } else { alert(message); }
+        }
 
         function preloadImages() {
             const images = ['logo.png', 'gato_k-coin.png', 'boost-icon.png'];
             images.forEach(function(src) {
                 const img = new Image();
-                img.src = src; // Carga directamente desde la raíz
+                img.src = src;
             });
         }
 
@@ -170,9 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         function init() {
             preloadImages();
             loadGameState();
-
             let userName = 'Player';
-            let userAvatar = `logo.png`; // Carga directamente desde la raíz
+            let userAvatar = `logo.png`;
             if (isTelegram && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
                 userName = user.first_name || 'Player';
